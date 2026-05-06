@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Garbage Classifier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="bg-orb bg-orb-one"></div>
+      <div class="bg-orb bg-orb-two"></div>
+
+      <div class="container py-4 py-md-5">
+        <header class="text-center mb-4 mb-md-5">
+          <p class="eyebrow mb-2">Eco AI Toolkit</p>
+          <h1 class="hero-title mb-3">Garbage Classification System</h1>
+          <p class="hero-subtitle mx-auto mb-0">
+            Upload one image and get an instant prediction for Plastic, Paper, Glass,
+            Metal, or Organic Waste.
+          </p>
+        </header>
+
+        {% if not model_ready %}
+        <div class="alert alert-warning shadow-sm" role="alert">
+          <strong>Model not loaded:</strong> run
+          <code>python model/train.py</code>
+          first to generate artifacts.
+        </div>
+        {% endif %}
+
+        <section class="row g-4 align-items-start">
+          <div class="col-12 col-lg-7">
+            <div class="card app-card h-100">
+              <div class="card-body p-4 p-md-5">
+                <h2 class="card-title mb-3">Upload an Image</h2>
+                <p class="text-muted mb-4">
+                  Use a clear photo where the waste item is visible.
+                </p>
+
+                <form id="predictForm" novalidate>
+                  <label for="imageInput" class="upload-zone d-block text-center p-4 p-md-5 mb-3">
+                    <input
+                      id="imageInput"
+                      name="file"
+                      type="file"
+                      accept="image/*"
+                      class="d-none"
+                      required
+                    />
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon mb-3"></i>
+                    <h3 class="upload-title mb-2">Tap to Choose Image</h3>
+                    <p class="upload-caption mb-0">JPG, PNG, WEBP, BMP</p>
+                  </label>
+
+                  <div id="previewWrapper" class="preview-wrapper d-none mb-4">
+                    <img id="previewImage" class="preview-image" alt="Uploaded preview" />
+                  </div>
+
+                  <button id="predictButton" type="submit" class="btn btn-predict w-100">
+                    Predict Category
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-5">
+            <div class="card app-card mb-4">
+              <div class="card-body p-4">
+                <h2 class="card-title mb-3">Prediction Result</h2>
+
+                <div id="loadingState" class="loading-state d-none">
+                  <div class="spinner-border text-success" role="status" aria-hidden="true"></div>
+                  <p class="mb-0">Analyzing image...</p>
+                </div>
+
+                <div id="resultState" class="d-none">
+                  <div class="result-pill mb-3">
+                    <span id="resultLabel">-</span>
+                  </div>
+                  <p class="mb-2">Confidence</p>
+                  <div class="progress mb-3" role="progressbar" aria-label="Confidence score">
+                    <div
+                      id="confidenceBar"
+                      class="progress-bar bg-success"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                  <p class="confidence-text mb-0"><span id="confidenceText">0%</span></p>
+                  <div id="confidenceNotice" class="alert alert-warning d-none mt-3 mb-0 py-2 px-3 small"></div>
+                  <div class="mt-3">
+                    <p class="mb-2 fw-semibold">Top 3 predictions</p>
+                    <div id="topPredictions" class="top-predictions"></div>
+                  </div>
+                </div>
+
+                <div id="errorState" class="alert alert-danger d-none mb-0" role="alert"></div>
+
+                <p id="emptyState" class="text-muted mb-0">
+                  Prediction output will appear here.
+                </p>
+              </div>
+            </div>
+
+            <div class="card app-card">
+              <div class="card-body p-4">
+                <h2 class="card-title mb-3">Waste Categories</h2>
+                <ul class="icon-list list-unstyled mb-0">
+                  <li><i class="fa-solid fa-bottle-water"></i> Plastic</li>
+                  <li><i class="fa-regular fa-newspaper"></i> Paper</li>
+                  <li><i class="fa-solid fa-wine-glass"></i> Glass</li>
+                  <li><i class="fa-solid fa-gears"></i> Metal</li>
+                  <li><i class="fa-solid fa-apple-whole"></i> Organic Waste</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
